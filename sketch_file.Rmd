@@ -1,0 +1,45 @@
+---
+title: "How strongr should work"
+author: "Edwin Thoen"
+date: "3/5/2020"
+output: html_document
+---
+
+This is a thinking through how the package should work, before doing any implementations. A first idea is to implement many individual units with which the user can make the assumptions to the data, both within a function as input and output checking, and in individual scripts. For the inputs and the outputs there should be wrapper functions that checks all the arguments. `check_inputs` will check the input variables and will return norhing if passes. `check_outputs` does the same, but does return the input when passes.
+
+Some sketches:
+
+Unit functions:
+
+```{r}
+has_df_class(mtcars)
+is_char_type("a")
+has_fctr_class()
+has_fctr_levels
+has_length()
+has_nrow(mtcars, 10)
+has_df_schema()
+has_names()
+```
+
+Within a function:
+
+```{r}
+check_inputs({
+  x %>% has_df_class() %>%
+    has_colnames("id", "date", "score") %>% 
+    has_df_schema(id = integer, date = Date, score = double)
+  y %>% is_list_type() %>% has_names("analysis1", "analysis2")
+})
+
+check_outputs(
+  x %>% is_numeric_type() %>% has_length(100)
+)
+```
+
+Helper functions:
+
+```{r}
+get_df_schema(mtcars)
+```
+
