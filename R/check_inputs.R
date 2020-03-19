@@ -1,20 +1,22 @@
-check_inputs <- function(...) {
+check_inputs <- function(..., trace = TRUE) {
   inputs <- list(...)
-  is_strongr_check <- sapply(inputs, function(x) inherits(x, "strongr_check"))
+  is_check <- sapply(inputs, function(x) inherits(x, "check"))
 
-  if (!all(is_strongr_check)) {
+  if (!all(is_check)) {
     error_msg <- paste0(
       "All inputs of ",
       crayon::blue("check_inputs"),
       " should be of class ",
-      crayon::green("strongr_check"),
+      crayon::green("check"),
+      ".",
       "\n",
-      "The following positions are of a different class: ",
-      crayon::red(paste(which(!is_strongr_check), collapse = " ")),
+      "The inputs at following position(s) is/are of a different class: ",
+      crayon::red(paste(which(!is_check), collapse = " ")),
+      ".",
       "\n"
     )
     cat(error_msg)
-    stop("Invalid inputs")
+    stop("Invalid inputs.")
   }
 
   checks_failed <- sapply(
@@ -22,6 +24,9 @@ check_inputs <- function(...) {
   )
 
   if (any(checks_failed)) {
+    if (trace) {
+      print_trace()
+    }
     for (x in inputs) {
       if (!is.null(x$msg)){
         cat(x$msg)
